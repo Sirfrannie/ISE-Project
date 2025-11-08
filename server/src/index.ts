@@ -1,59 +1,37 @@
 import express, {Express, Request, Response} from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-import path from "path";
+import { server, pool } from "./config/config";
 import { fileURLToPath } from "url";
 
-dotenv.config();
 
-const PORT: number = 3001;
+import path from "path";
+
+// routers
+import userRoute from "./routers/userRoute";
+import cartRoute from "./routers/cartRoute";
+import productRoute from "./routers/productRoute";
+import authRoute from "./routers/authRoute";
+import orderRoute from "./routers/orderRoute";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app: Express = express();
 app.use(cors());
 app.use(express.json());
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-console.log(__dirname);
 app.use("/img", express.static(path.join(__dirname, "img")));
 
-interface UserData{
-    id: number,
-    name: string,
-    image_url: string
-}
-// list of user to send to client
-let users: UsersData[] = [
-    { id: 1, name: "Somsri", image_url: "http://localhost:3001/img/4.jpg"},
-    { id: 2, name: "Somsai", image_url: "http://localhost:3001/img/6.jpg"},
-    { id: 3, name: "Somorn", image_url: "http://localhost:3001/img/5.jpg"},
-];
+// Routers 
+app.use("/user", userRoute);
+app.use("/cart", cartRoute);
+app.use("/product", productRoute);
+app.use("/auth", authRoute);
+app.use("/order", orderRoute);
 
-/*
-app.get("/img/4.jpg", (req: Request, res: Response) =>{
-    res.sendFile(__dirname+"/img/4.jpg");
-});
-*/
-
-// get request from client
-app.get("/user", (req: Request, res: Response) =>{
-    res.status(200).json(users)
-});
-
-// client send data to server
-app.post("/user", (req: Request, res: Response) =>{
-    const { name } = req.body;
-
-    if (!name || typeof name !== "string"){
-        return res.status(400).json({result: "Error: Invalid name"});
-    }
-
-    const newUser = {
-        id: users.length + 1,
-        name
-    };
-    users.push(newUser);
-    res.status(200).json({result: "new User added"});
-});
-
-app.listen(PORT, ()=> console.log(`Server running at port ${PORT}`));
+// connect to database
+pool.connect()
+    .then(() => console.log("Database Connected"))
+    .catch((err: Error) => console.error("DB connection error: ", err));
+// initailize server
+app.listen(server.port, ()=> console.log(`Server running at port ${server.port}`));

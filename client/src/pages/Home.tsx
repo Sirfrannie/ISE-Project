@@ -5,6 +5,17 @@ interface UserData{
     name: string,
     image_url: string
 }
+interface registerData{
+    id: number,
+    f_name: string,
+    l_name: string,
+    image_url: string | null,
+
+    user_name: string,
+    email: string,
+    password: string
+}
+/*
 export default function Home(){
     const [data, setData] = useState<UserData[]>();
     const [newName, setNewName] = useState("");
@@ -15,10 +26,15 @@ export default function Home(){
             .then((res) => res.json())
             .then((json: UserData[]) => setData(json));
     }, []);
+    const newuser: registerData = {
+        id: 66050033,
+        f_name: "Jacob",
+        l_name: "Laganda",
 
+    };
     const addPerson = async () =>{
         if (!newName.trim()) return;
-        await fetch("http://localhost:3001/user", {
+        await fetch("http://localhost:3001/user/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: newName })
@@ -57,3 +73,5 @@ export default function Home(){
         </div>
     );
 }
+
+*/
